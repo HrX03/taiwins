@@ -38,6 +38,8 @@ extern "C" {
 enum tw_desktop_init_option {
 	TW_DESKTOP_INIT_INCLUDE_WL_SHELL = 1 << 0,
 	TW_DESKTOP_INIT_INCLUDE_XDG_SHELL_STABEL = 1 << 1,
+	TW_DESKTOP_INIT_INCLUDE_ALL_SHELLS = TW_DESKTOP_INIT_INCLUDE_WL_SHELL |
+		TW_DESKTOP_INIT_INCLUDE_XDG_SHELL_STABEL,
 };
 
 struct tw_desktop_surface;
@@ -120,7 +122,7 @@ struct tw_desktop_surface {
          * after every commit. The value before the initial commit is 0.
          */
 	struct tw_geometry_2d window_geometry;
-	char *title, *class;
+	char *title, *cls;
 
 	//API is required to call this function for additional size change. Xdg
 	//API also send configure for popup, which sets the position as well.
@@ -149,13 +151,19 @@ tw_desktop_init(struct tw_desktop_manager *desktop,
                 struct wl_display *display,
                 const struct tw_desktop_surface_api *api,
                 void *user_data,
-                enum tw_desktop_init_option option);
+                int option);
+
+bool
+init_wl_shell(struct tw_desktop_manager *desktop);
+
+bool
+init_xdg_shell(struct tw_desktop_manager *desktop);
 
 struct tw_desktop_manager *
 tw_desktop_create_global(struct wl_display *display,
                          const struct tw_desktop_surface_api *api,
                          void *user_data,
-                         enum tw_desktop_init_option option);
+                         int option);
 /**
  * @brief adding a role which implements tw_desktop_surface.
  *
@@ -204,7 +212,7 @@ tw_desktop_surface_set_title(struct tw_desktop_surface *surf,
                              const char *title, size_t maxlen);
 void
 tw_desktop_surface_set_class(struct tw_desktop_surface *surf,
-                             const char *class, size_t maxlen);
+                             const char *cls, size_t maxlen);
 void
 tw_desktop_surface_move(struct tw_desktop_surface *surf,
                         struct tw_seat *seat, uint32_t serial);

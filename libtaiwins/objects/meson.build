@@ -93,7 +93,7 @@ lib_twobjects = static_library(
   c_args : twobject_cargs,
   dependencies : twobjects_deps,
   include_directories : twobjects_inc,
-  version: meson.project_version(),
+#  version: meson.project_version(),
   install : false,
   )
 

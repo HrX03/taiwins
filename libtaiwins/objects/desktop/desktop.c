@@ -40,12 +40,6 @@ static struct wl_list tw_desktop_surface_roles = {
 	.prev = &tw_desktop_surface_roles,
 };
 
-bool
-init_wl_shell(struct tw_desktop_manager *desktop);
-
-bool
-init_xdg_shell(struct tw_desktop_manager *desktop);
-
 static void
 tw_desktop_fini(struct tw_desktop_manager *desktop)
 {
@@ -68,7 +62,7 @@ tw_desktop_init(struct tw_desktop_manager *desktop,
                 struct wl_display *display,
                 const struct tw_desktop_surface_api *api,
                 void *user_data,
-                enum tw_desktop_init_option option)
+                int option)
 {
 	bool ret = true;
 	if (!option)
@@ -95,7 +89,7 @@ WL_EXPORT struct tw_desktop_manager *
 tw_desktop_create_global(struct wl_display *display,
                          const struct tw_desktop_surface_api *api,
                          void *user_data,
-                         enum tw_desktop_init_option option)
+                         int option)
 {
 	static struct tw_desktop_manager s_desktop_manager = {0};
 
@@ -119,7 +113,7 @@ tw_desktop_surface_init(struct tw_desktop_surface *surf,
 	surf->resource = resource;
 	surf->surface_added = false;
 	surf->title = NULL;
-	surf->class = NULL;
+	surf->cls = NULL;
 	surf->states = 0;
 	surf->max_size.w = UINT32_MAX;
 	surf->max_size.h = UINT32_MAX;
@@ -134,9 +128,9 @@ tw_desktop_surface_fini(struct tw_desktop_surface *surf)
 		free(surf->title);
 		surf->title = NULL;
 	}
-	if (surf->class) {
-		free(surf->class);
-		surf->class = NULL;
+	if (surf->cls) {
+		free(surf->cls);
+		surf->cls = NULL;
 	}
 }
 
@@ -206,16 +200,16 @@ tw_desktop_surface_set_title(struct tw_desktop_surface *surf,
 
 WL_EXPORT void
 tw_desktop_surface_set_class(struct tw_desktop_surface *surf,
-                             const char *class, size_t maxlen)
+                             const char *cls, size_t maxlen)
 {
 	char *tmp = NULL;
-	if (class) {
-		tmp = maxlen ? strndup(class, maxlen) : strdup(class);
+	if (cls) {
+		tmp = maxlen ? strndup(cls, maxlen) : strdup(cls);
 		if (!tmp)
 			return;
 	}
-	free(surf->class);
-	surf->class = tmp;
+	free(surf->cls);
+	surf->cls = tmp;
 }
 
 WL_EXPORT void
